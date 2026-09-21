@@ -5,7 +5,7 @@
 ### 설치
 
 ```bash
-sudo curl -sL https://github.com/<깃허브아이디>/qui/releases/latest/download/qui -o /usr/local/bin/qui && sudo chmod +x /usr/local/bin/qui
+sudo curl -sL https://github.com/yeoni2026/qui/releases/latest/download/qui -o /usr/local/bin/qui && sudo chmod +x /usr/local/bin/qui
 ```
 
 ---
