@@ -18,13 +18,26 @@ int main(int argc, char *argv[]){
 
         printf("[qui shortcuts]\n");
         for (int i = 0; i <= 9; ++i) {
-            load_command(buffer, i);
-            buffer[DATA_SIZE - 1] = '\0';
+            res_code rc = load_command(buffer, i);
+            
+            if (rc == FILE_NOT_FOUND) {
+                for (int j = 0; j < 10; ++j){
+                    printf("  %d: (empty)\n", j);
+                }
+                break;
+            } 
+            else if (rc == FILE_READ_FAILED) {
+                fprintf(stderr, "Error: Failed to read data from file.\n");
+                exit(EXIT_FAILURE);
+            } 
+            else {
+                buffer[DATA_SIZE - 1] = '\0';
 
-            if (buffer[0] == '\0') {
-                printf("  %d: (empty)\n", i);
-            } else {
-                printf("  %d: %s\n", i, buffer);
+                if (buffer[0] == '\0') {
+                    printf("  %d: (empty)\n", i);
+                } else {
+                    printf("  %d: %s\n", i, buffer);
+                }
             }
         }
 
