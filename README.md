@@ -13,7 +13,7 @@ sudo chmod +x /usr/local/bin/qui
 ```
 또는
 ```bash
-git clone [git@github.com:yeoni2026/qui.git](https://github.com/yeoni2026/qui.git)
+git clone https://github.com/yeoni2026/qui.git
 cd qui
 sudo make install
 ```
