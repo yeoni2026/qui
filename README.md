@@ -1,17 +1,24 @@
 # qui
 
+`qui`는 터미널 명령어 단축키 매니저입니다.  
+자주 쓰는 명령어를 `qui 0`부터 `qui 9`까지 등록하고 빠르게 실행할 수 있습니다.
+
 ---
 
 ### 설치
 
 ```bash
-sudo curl -sL https://github.com/yeoni2026/qui/releases/latest/download/qui -o /usr/local/bin/qui && sudo chmod +x /usr/local/bin/qui
+sudo curl -sL https://github.com/yeoni2026/qui/releases/latest/download/qui -o /usr/local/bin/qui
+sudo chmod +x /usr/local/bin/qui
+```
+또는
+```bash
+git clone [git@github.com:yeoni2026/qui.git](https://github.com/yeoni2026/qui.git)
+cd qui
+sudo make install
 ```
 
 ---
-
-`qui`는 터미널 명령어 단축키 매니저입니다.  
-자주 쓰는 명령어를 `qui 0`부터 `qui 9`까지 등록하고 빠르게 실행할 수 있습니다.
 
 ### 단축키 설정
 `qui <num> <cmd>`
