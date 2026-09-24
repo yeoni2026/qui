@@ -16,13 +16,13 @@ int main(int argc, char *argv[]){
     if (argc == 1) {
         char buffer[DATA_SIZE];
 
-        printf("[qui shortcuts]\n");
+        fprintf(stderr, "[qui shortcuts]\n");
         for (int i = 0; i <= 9; ++i) {
             res_code rc = load_command(buffer, i);
             
             if (rc == FILE_NOT_FOUND) {
                 for (int j = 0; j < 10; ++j){
-                    printf("  %d: (empty)\n", j);
+                    fprintf(stderr, "  %d: (empty)\n", j);
                 }
                 break;
             } 
@@ -34,17 +34,17 @@ int main(int argc, char *argv[]){
                 buffer[DATA_SIZE - 1] = '\0';
 
                 if (buffer[0] == '\0') {
-                    printf("  %d: (empty)\n", i);
+                    fprintf(stderr, "  %d: (empty)\n", i);
                 } else {
-                    printf("  %d: %s\n", i, buffer);
+                    fprintf(stderr, "  %d: %s\n", i, buffer);
                 }
             }
         }
 
         // 사용법 가이드 출력
-        printf("\nUsage:\n");
-        printf("  %s <num>          Execute shortcut\n", argv[0]);
-        printf("  %s <num> <cmd>    Register shortcut\n", argv[0]);
+        fprintf(stderr, "\nUsage:\n");
+        fprintf(stderr, "  %s <num>          Execute shortcut\n", argv[0]);
+        fprintf(stderr, "  %s <num> <cmd>    Register shortcut\n", argv[0]);
         return 0;
     }
     else if (argc == 2){
@@ -65,17 +65,11 @@ int main(int argc, char *argv[]){
         }
 
         if (buffer[0] == '\0'){
-            printf("Shortcut %d is not set yet.\n", index);
+            fprintf(stderr, "Shortcut %d is not set yet.\n", index);
             exit(EXIT_FAILURE);
         }
 
         printf("%s\n", buffer);
-
-        char *exec_argv[4] = {"/bin/sh", "-c", buffer, NULL};
-        execvp(exec_argv[0], exec_argv);
-
-        fprintf(stderr, "Error: execvp failed.");
-        exit(EXIT_FAILURE);
     }
     else {
         if (strlen(argv[1]) != 1 || !(argv[1][0] >= '0' && argv[1][0] <= '9')){
@@ -92,7 +86,7 @@ int main(int argc, char *argv[]){
 
             if (buf_idx + len + (has_space ? 2 : 0) + 2 >= DATA_SIZE) {
                 fprintf(stderr, "Error: Command exceeds maximum length (%d bytes).\n", DATA_SIZE);
-                return -1;
+                exit(EXIT_FAILURE);
             }
 
             if (has_space) {
@@ -118,12 +112,6 @@ int main(int argc, char *argv[]){
         change_command(buffer, index);
 
         printf("%s\n", buffer);
-        
-        char *exec_argv[4] = {"/bin/sh", "-c", buffer, NULL};
-        execvp(exec_argv[0], exec_argv);
-
-        fprintf(stderr, "Error: execvp failed.\n");
-        exit(EXIT_FAILURE);
     }
 }
 
