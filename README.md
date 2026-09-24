@@ -28,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/yeoni2026/qui/main/uninstall.sh | b
 qui 1 echo "hello world"
 
 # qui 3에 명령어를 등록합니다.
-qui 5 git add .
+qui 3 git add .
 
 # 직전에 썼던 명령어를 qui 4에 등록하고 싶다면
 qui 4 !!
@@ -48,7 +48,7 @@ qui 1
 
 # 등록된 명령어가 없을 경우
 qui 2
->> Shortcut 3 is not set yet.
+>> Shortcut 2 is not set yet.
 ```
 
 ---
