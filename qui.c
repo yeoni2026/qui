@@ -71,6 +71,8 @@ int main(int argc, char *argv[]){
 
         fprintf(stderr, "%s\n", buffer);
         printf("%s", buffer);
+
+        return 0;
     }
     else {
         if (strlen(argv[1]) != 1 || !(argv[1][0] >= '0' && argv[1][0] <= '9')){
@@ -112,7 +114,7 @@ int main(int argc, char *argv[]){
 
         change_command(buffer, index);
 
-        printf("%s", buffer);
+        return 0;
     }
 }
 
