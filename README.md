@@ -8,14 +8,13 @@
 ### 설치
 
 ```bash
-sudo curl -sL https://github.com/yeoni2026/qui/releases/latest/download/qui -o /usr/local/bin/qui
-sudo chmod +x /usr/local/bin/qui
+curl -fsSL https://raw.githubusercontent.com/yeoni2026/qui/main/install.sh | bash
 ```
-또는
+
+### 삭제
+
 ```bash
-git clone https://github.com/yeoni2026/qui.git
-cd qui
-sudo make install
+curl -fsSL https://raw.githubusercontent.com/yeoni2026/qui/main/uninstall.sh | bash
 ```
 
 ---
