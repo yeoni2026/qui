@@ -26,4 +26,4 @@ clean_rc "$HOME/.bashrc"
 clean_rc "$HOME/.zshrc"
 
 echo "qui가 성공적으로 삭제되었습니다."
-echo "현재 터미널에 반영하려면 'source ~/.bashrc' (또는 zshrc)를 실행하거나 터미널을 다시 열어주세요."
+echo "현재 터미널에 반영하려면 source ~/.bashrc (또는 zshrc)를 실행하거나 터미널을 다시 열어주세요."
