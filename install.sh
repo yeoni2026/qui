@@ -45,19 +45,21 @@ fi
 # 중복 등록 방지 검사 후 추가
 if ! grep -q "qui()" "$RC_FILE" 2>/dev/null; then
     echo "==> $RC_FILE 에 qui 함수 등록 중..."
-    echo '# >>> qui initialization >>>
-    qui() {
-        local cmd
-        cmd=$(qui-bin "$@")
-        local status=$?
+    cat << 'EOF' >> "$RC_FILE"
 
-        if [ $status -eq 0 ] && [ -n "$cmd" ]; then
-            eval "$cmd"
-        fi
-        return $status
-    }
-    # <<< qui initialization <<<'
-    >> "$RC_FILE"
+# >>> qui initialization >>>
+qui() {
+    local cmd
+    cmd=$(qui-bin "$@")
+    local status=$?
+
+    if [ $status -eq 0 ] && [ -n "$cmd" ]; then
+        eval "$cmd"
+    fi
+    return $status
+}
+# <<< qui initialization <<<
+EOF
 fi
 
 echo "==> 설치가 완료되었습니다!"
