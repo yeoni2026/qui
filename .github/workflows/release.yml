@@ -1,0 +1,55 @@
+name: Release qui
+
+# 'v'로 시작하는 태그(예: v1.1.0)를 깃허브로 푸시했을 때만 작동
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build (${{ matrix.target.os }}-${{ matrix.target.arch }})
+    runs-on: ${{ matrix.target.runner }}
+    strategy:
+      matrix:
+        target:
+          # 1. 리눅스 x86_64 (일반 리눅스 서버/PC)
+          - runner: ubuntu-latest
+            os: linux
+            arch: amd64
+            binary_name: qui-linux-amd64
+
+          # 2. 맥 Intel CPU
+          - runner: macos-13
+            os: darwin
+            arch: amd64
+            binary_name: qui-darwin-amd64
+
+          # 3. 맥 Apple Silicon (M1/M2/M3/M4)
+          - runner: macos-latest
+            os: darwin
+            arch: arm64
+            binary_name: qui-darwin-arm64
+
+    steps:
+      # 코드 내려받기
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 컴파일 (Makefile의 make 실행)
+      - name: Build binary
+        run: |
+          make
+          # 빌드된 바이너리 이름을 규격에 맞게 변경
+          mv qui ${{ matrix.target.binary_name }}
+
+      # 깃허브 릴리즈 페이지에 바이너리 업로드
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.target.binary_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
