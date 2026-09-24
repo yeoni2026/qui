@@ -4,7 +4,11 @@ set -e
 # 1. 실행 파일 삭제
 INSTALL_DIR="/usr/local/bin"
 if [ -f "$INSTALL_DIR/qui-bin" ]; then
-    rm -f "$INSTALL_DIR/qui-bin"
+    if [ -w "$INSTALL_DIR" ]; then
+        rm -f "$INSTALL_DIR/qui-bin"
+    else
+        sudo rm -f "$INSTALL_DIR/qui-bin"
+    fi
     echo "✔ $INSTALL_DIR/qui-bin 바이너리를 삭제했습니다."
 fi
 
