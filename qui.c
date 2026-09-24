@@ -6,11 +6,15 @@
 
 #define DATA_SIZE 128
 #define MAX_TOKEN 10
+#define SHORTCUT_NUM 9 // 1부터 9까지
 typedef enum {SUCCESS, FILE_NOT_FOUND, FILE_READ_FAILED} res_code;
 
 static void get_data_path(char *dest, size_t size);
-res_code load_command(char *buffer, int index);
+void load_command(char *buffer, int index);
 void change_command(char *buffer, int index);
+static int find_empty(void);
+static void create_datafile(char *path);
+
 
 int main(int argc, char *argv[]){ 
     if (argc == 1) {        
@@ -22,47 +26,27 @@ int main(int argc, char *argv[]){
         char buffer[DATA_SIZE];
 
         fprintf(stderr, "\n[qui shortcuts]\n");
-        for (int i = 0; i <= 9; ++i) {
-            res_code rc = load_command(buffer, i);
-            
-            if (rc == FILE_NOT_FOUND) {
-                for (int j = 0; j < 10; ++j){
-                    fprintf(stderr, "  %d: (empty)\n", j);
-                }
-                break;
-            } 
-            else if (rc == FILE_READ_FAILED) {
-                fprintf(stderr, "Error: Failed to read data from file.\n");
-                exit(EXIT_FAILURE);
-            } 
-            else {
-                buffer[DATA_SIZE - 1] = '\0';
-
-                if (buffer[0] == '\0') {
-                    fprintf(stderr, "  %d: (empty)\n", i);
-                } else {
-                    fprintf(stderr, "  %d: %s\n", i, buffer);
-                }
+        for (int i = 1; i <= 9; ++i) {
+            load_command(buffer, i);
+        
+            buffer[DATA_SIZE - 1] = '\0';
+            if (buffer[0] == '\0') {
+                fprintf(stderr, "  %d: (empty)\n", i);
+            } else {
+                fprintf(stderr, "  %d: %s\n", i, buffer);
             }
         }
         return 0;
     }
     else if (argc == 2){
-        if (strlen(argv[1]) != 1 || !(argv[1][0] >= '0' && argv[1][0] <= '9')){
-            fprintf(stderr, "Error: Invalid index '%s'. Must be a number between 0 and 9.\n", argv[1]);
+        if (strlen(argv[1]) != 1 || !(argv[1][0] >= '1' && argv[1][0] <= '9')){
+            fprintf(stderr, "Error: Invalid index '%s'. Must be a number between 1 and 9.\n", argv[1]);
             exit(EXIT_FAILURE);
         }
         int index = (int)(strtol(argv[1], NULL, 10));
         char buffer[DATA_SIZE];
         
-        res_code rc = load_command(buffer, index);
-        if (rc == FILE_NOT_FOUND) {
-            fprintf(stderr, "Error: Data file not found.\n");
-            exit(EXIT_FAILURE);
-        } else if (rc == FILE_READ_FAILED) {
-            fprintf(stderr, "Error: Failed to read data from file.\n");
-            exit(EXIT_FAILURE);
-        }
+        load_command(buffer, index);
 
         if (buffer[0] == '\0'){
             fprintf(stderr, "Shortcut %d is not set yet.\n", index);
@@ -75,11 +59,21 @@ int main(int argc, char *argv[]){
         return 0;
     }
     else {
-        if (strlen(argv[1]) != 1 || !(argv[1][0] >= '0' && argv[1][0] <= '9')){
-            fprintf(stderr, "Error: Invalid index '%s'. Must be a number between 0 and 9.\n", argv[1]);
+        int index;
+        if (strcmp(argv[1], "auto") == 0){
+            if ((index = find_empty()) == -1){
+                fprintf(stderr, "Error: All slots (1-9) are full. Use 'qui clean' to free up space.\n");
+                exit(EXIT_FAILURE);
+            }
+            fprintf(stderr, "Command assigned to slot %d. Run with 'qui %d'.\n", index, index);
+        }
+        else if (strlen(argv[1]) == 1 && argv[1][0] >= '1' && argv[1][0] <= '9'){
+            index = (int)(strtol(argv[1], NULL, 10));
+        }
+        else {
+            fprintf(stderr, "Error: Invalid index '%s'. Must be a number between 1 and 9.\n", argv[1]);
             exit(EXIT_FAILURE);
         }
-        int index = (int)(strtol(argv[1], NULL, 10));
         
         char buffer[DATA_SIZE];
         int buf_idx = 0;
@@ -127,20 +121,29 @@ static void get_data_path(char *dest, size_t size) {
     }
 }
 
-res_code load_command(char *buffer, int index){
+void load_command(char *buffer, int index) {
     char path[PATH_MAX];
     get_data_path(path, sizeof(path));
 
-    FILE* fp = fopen(path, "rb");
-    if (fp == NULL) return FILE_NOT_FOUND;
-
-    fseek(fp, DATA_SIZE * index, SEEK_SET);
-    if (fread(buffer, sizeof(char), DATA_SIZE, fp) < DATA_SIZE) {
-        return FILE_READ_FAILED;
+    FILE *fp = fopen(path, "rb");
+    if (fp == NULL) {
+        create_datafile(path);
+        fp = fopen(path, "rb");
     }
-    fclose(fp);
 
-    return SUCCESS;
+    if (fseek(fp, DATA_SIZE * (index - 1), SEEK_SET) != 0) {
+        fprintf(stderr, "qui: failed to seek data file\n");
+        fclose(fp);
+        exit(EXIT_FAILURE);
+    }
+
+    if (fread(buffer, sizeof(char), DATA_SIZE, fp) < DATA_SIZE) {
+        fprintf(stderr, "qui: failed to read data file\n");
+        fclose(fp);
+        exit(EXIT_FAILURE);
+    }
+
+    fclose(fp);
 }
 
 void change_command(char *buffer, int index){
@@ -148,20 +151,53 @@ void change_command(char *buffer, int index){
     get_data_path(path, sizeof(path));
     
     FILE* fp = fopen(path, "rb+");
-    if (fp == NULL) {
-        fp = fopen(path, "wb+");
-        if (fp == NULL) {
-            perror("파일 생성 실패");
-            exit(EXIT_FAILURE);
-        }
+    if (fp == NULL) create_datafile(path);
 
-        char empty[DATA_SIZE * 10] = {0};
-        fwrite(empty, sizeof(char), DATA_SIZE * 10, fp);
-    }
-
-    fseek(fp, DATA_SIZE * index, SEEK_SET);
+    fseek(fp, DATA_SIZE * (index - 1), SEEK_SET);
     fwrite(buffer, sizeof(char), DATA_SIZE, fp);
     fclose(fp);
 
     return;
+}
+
+static int find_empty(void) {
+    char path[PATH_MAX];
+    get_data_path(path, sizeof(path));
+
+    FILE *fp = fopen(path, "rb");
+    if (fp == NULL) {
+        create_datafile(path);
+        fp = fopen(path, "rb");
+    }
+
+    char buffer[DATA_SIZE];
+    for (int i = 1; i <= SHORTCUT_NUM; ++i) {
+        if (fread(buffer, sizeof(char), DATA_SIZE, fp) < DATA_SIZE) {
+            fprintf(stderr, "qui: failed to read data file\n");
+            fclose(fp);
+            exit(EXIT_FAILURE);
+        }
+
+        // 빈 슬롯 발견 시 파일 닫고 바로 인덱스 반환
+        if (buffer[0] == '\0') {
+            fclose(fp);
+            return i;
+        }
+    }
+
+    fclose(fp);
+    return -1; // 모든 슬롯(1~SHORTCUT_NUM)이 꽉 찼을 때
+}
+
+static void create_datafile(char *path){
+    FILE *fp = fopen(path, "wb+");
+    if (fp == NULL) {
+        fprintf(stderr, "Error: Failed to create data file\n");
+        exit(EXIT_FAILURE);
+    }
+
+    char empty[DATA_SIZE * SHORTCUT_NUM] = {0};
+    fwrite(empty, sizeof(char), DATA_SIZE * SHORTCUT_NUM, fp);
+
+    fclose(fp);
 }
