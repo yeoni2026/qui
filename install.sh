@@ -14,11 +14,7 @@ ARCH=$(uname -m)
 if [ "$OS" = "Linux" ]; then
     FILE="qui-linux-amd64"
 elif [ "$OS" = "Darwin" ]; then
-    if [ "$ARCH" = "arm64" ]; then
-        FILE="qui-darwin-arm64"
-    else
-        FILE="qui-darwin-amd64"
-    fi
+    FILE="qui-darwin-arm64"
 else
     echo "지원하지 않는 OS입니다: $OS"
     exit 1

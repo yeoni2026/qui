@@ -22,13 +22,7 @@ jobs:
             arch: amd64
             binary_name: qui-linux-amd64
 
-          # 2. 맥 Intel CPU
-          - runner: macos-13
-            os: darwin
-            arch: amd64
-            binary_name: qui-darwin-amd64
-
-          # 3. 맥 Apple Silicon (M1/M2/M3/M4)
+          # 2. 맥 Apple Silicon (M1/M2/M3/M4)
           - runner: macos-latest
             os: darwin
             arch: arm64
