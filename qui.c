@@ -13,10 +13,15 @@ res_code load_command(char *buffer, int index);
 void change_command(char *buffer, int index);
 
 int main(int argc, char *argv[]){ 
-    if (argc == 1) {
+    if (argc == 1) {        
+        // 사용법 가이드 출력
+        fprintf(stderr, "Usage:\n");
+        fprintf(stderr, "  %s <num>          Execute shortcut\n", argv[0]);
+        fprintf(stderr, "  %s <num> <cmd>    Register shortcut\n", argv[0]);
+        
         char buffer[DATA_SIZE];
 
-        fprintf(stderr, "[qui shortcuts]\n");
+        fprintf(stderr, "\n[qui shortcuts]\n");
         for (int i = 0; i <= 9; ++i) {
             res_code rc = load_command(buffer, i);
             
@@ -40,11 +45,6 @@ int main(int argc, char *argv[]){
                 }
             }
         }
-
-        // 사용법 가이드 출력
-        fprintf(stderr, "\nUsage:\n");
-        fprintf(stderr, "  %s <num>          Execute shortcut\n", argv[0]);
-        fprintf(stderr, "  %s <num> <cmd>    Register shortcut\n", argv[0]);
         return 0;
     }
     else if (argc == 2){
