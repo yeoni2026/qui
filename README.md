@@ -26,12 +26,11 @@ curl -fsSL https://raw.githubusercontent.com/yeoni2026/qui/main/uninstall.sh | b
 ```bash
 # qui 1에 명령어를 등록하고 바로 실행합니다.
 qui 1 echo "hello world"
->> echo "hello world"
 >> hello world
 
 # qui 5에 명령어를 등록하고 바로 실행합니다.
-qui 5 git add .
->> git add .
+qui 5 echo "apple banana cherry" | wc -w
+>> 3
 ```
 
 ---
@@ -59,12 +58,13 @@ qui 3
 예시:
 ```bash
 qui
+>> Usage:
+>>   qui <num>          Execute shortcut
+>>   qui <num> <cmd>    Register shortcut
+>>
 >> [qui shortcuts]
 >>   0: (empty)
 >>   1: echo "hello world"
 >>   ...
->>
->> Usage:
->>   qui <num>          Execute shortcut
->>   qui <num> <cmd>    Register shortcut
+>>   9: (empty)
 ```
