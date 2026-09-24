@@ -53,8 +53,19 @@ if ! grep -q "qui()" "$RC_FILE" 2>/dev/null; then
 # --- qui shell integration ---
 qui() {
     local cmd
+    # 1. 바이너리 실행 후 stdout은 cmd에 담고, stderr는 화면에 그대로 통과
     cmd=$(qui-bin "$@")
-    eval "$cmd"
+    local status=$?
+
+    # 2. 만약 qui-bin이 비정상 종료(exit != 0)했다면 eval을 하지 않고 그 상태 코드 그대로 반환
+    if [ $status -ne 0 ]; then
+        return $status
+    fi
+
+    # 3. 정상 종료(0)되었고, 실행할 명령어가 stdout으로 들어온 경우에만 eval 실행
+    if [ -n "$cmd" ]; then
+        eval "$cmd"
+    fi
 }
 ' >> "$RC_FILE"
 fi
