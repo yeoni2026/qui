@@ -45,8 +45,7 @@ fi
 # 중복 등록 방지 검사 후 추가
 if ! grep -q "qui()" "$RC_FILE" 2>/dev/null; then
     echo "==> $RC_FILE 에 qui 함수 등록 중..."
-    echo
-    '# >>> qui initialization >>>
+    echo '# >>> qui initialization >>>
     qui() {
         local cmd
         cmd=$(qui-bin "$@")
