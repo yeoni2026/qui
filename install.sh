@@ -2,7 +2,7 @@
 set -e
 
 # 1. 깃허브 정보 및 저장 경로 설정
-GITHUB_USER="사용자이름"       # 본인 GitHub 아이디로 변경
+GITHUB_USER="yeoni2026"       # 본인 GitHub 아이디로 변경
 REPO="qui"
 INSTALL_DIR="/usr/local/bin"
 BINARY_NAME="qui-bin"         # 실제 실행 바이너리 이름
