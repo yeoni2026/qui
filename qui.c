@@ -9,11 +9,11 @@
 #define SHORTCUT_NUM 9 // 1부터 9까지
 typedef enum {SUCCESS, FILE_NOT_FOUND, FILE_READ_FAILED} res_code;
 
-static void get_data_path(char *dest, size_t size);
+void get_data_path(char *dest, size_t size);
 void load_command(char *buffer, int index);
 void change_command(char *buffer, int index);
-static int find_empty(void);
-static void create_datafile(char *path);
+int find_empty(void);
+void init_datafile(char *path);
 
 
 int main(int argc, char *argv[]){ 
@@ -39,7 +39,13 @@ int main(int argc, char *argv[]){
         return 0;
     }
     else if (argc == 2){
-        if (strlen(argv[1]) != 1 || !(argv[1][0] >= '1' && argv[1][0] <= '9')){
+        if (strcmp(argv[1], "clean") == 0){
+            char path[PATH_MAX];
+            get_data_path(path, sizeof(path));
+            init_datafile(path);
+            return 0;
+        }
+        else if (strlen(argv[1]) == 1 && argv[1][0] >= '1' && argv[1][0] <= '9'){
             fprintf(stderr, "Error: Invalid index '%s'. Must be a number between 1 and 9.\n", argv[1]);
             exit(EXIT_FAILURE);
         }
@@ -112,7 +118,7 @@ int main(int argc, char *argv[]){
     }
 }
 
-static void get_data_path(char *dest, size_t size) {
+void get_data_path(char *dest, size_t size) {
     const char *home = getenv("HOME");
     if (home) {
         snprintf(dest, size, "%s/.qui_data", home);
@@ -127,7 +133,7 @@ void load_command(char *buffer, int index) {
 
     FILE *fp = fopen(path, "rb");
     if (fp == NULL) {
-        create_datafile(path);
+        init_datafile(path);
         fp = fopen(path, "rb");
     }
 
@@ -151,7 +157,7 @@ void change_command(char *buffer, int index){
     get_data_path(path, sizeof(path));
     
     FILE* fp = fopen(path, "rb+");
-    if (fp == NULL) create_datafile(path);
+    if (fp == NULL) init_datafile(path);
 
     fseek(fp, DATA_SIZE * (index - 1), SEEK_SET);
     fwrite(buffer, sizeof(char), DATA_SIZE, fp);
@@ -160,13 +166,13 @@ void change_command(char *buffer, int index){
     return;
 }
 
-static int find_empty(void) {
+int find_empty(void) {
     char path[PATH_MAX];
     get_data_path(path, sizeof(path));
 
     FILE *fp = fopen(path, "rb");
     if (fp == NULL) {
-        create_datafile(path);
+        init_datafile(path);
         fp = fopen(path, "rb");
     }
 
@@ -189,7 +195,7 @@ static int find_empty(void) {
     return -1; // 모든 슬롯(1~SHORTCUT_NUM)이 꽉 찼을 때
 }
 
-static void create_datafile(char *path){
+void init_datafile(char *path){
     FILE *fp = fopen(path, "wb+");
     if (fp == NULL) {
         fprintf(stderr, "Error: Failed to create data file\n");
