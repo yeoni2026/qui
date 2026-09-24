@@ -38,7 +38,7 @@ fi
 # 5. ~/.bashrc (또는 ~/.zshrc)에 쉘 함수 등록
 RC_FILE="$HOME/.bashrc"
 # macOS 기본 쉘이 zsh인 경우 대응
-if [ "$SHELL" = "*/zsh" ] || [ -f "$HOME/.zshrc" ]; then
+if [ "$SHELL" = "*/zsh" ]; then
     RC_FILE="$HOME/.zshrc"
 fi
 
