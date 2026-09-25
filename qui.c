@@ -45,7 +45,7 @@ int main(int argc, char *argv[]){
             init_datafile(path);
             return 0;
         }
-        else if (strlen(argv[1]) == 1 && argv[1][0] >= '1' && argv[1][0] <= '9'){
+        else if (strlen(argv[1]) != 1 || !(argv[1][0] >= '1' && argv[1][0] <= '9')){
             fprintf(stderr, "Error: Invalid index '%s'. Must be a number between 1 and 9.\n", argv[1]);
             exit(EXIT_FAILURE);
         }
@@ -73,13 +73,11 @@ int main(int argc, char *argv[]){
             }
             fprintf(stderr, "Command assigned to slot %d. Run with 'qui %d'.\n", index, index);
         }
-        else if (strlen(argv[1]) == 1 && argv[1][0] >= '1' && argv[1][0] <= '9'){
-            index = (int)(strtol(argv[1], NULL, 10));
-        }
-        else {
+        else if (strlen(argv[1]) != 1 || !(argv[1][0] >= '1' && argv[1][0] <= '9')){
             fprintf(stderr, "Error: Invalid index '%s'. Must be a number between 1 and 9.\n", argv[1]);
             exit(EXIT_FAILURE);
         }
+        else index = (int)(strtol(argv[1], NULL, 10));
         
         char buffer[DATA_SIZE];
         int buf_idx = 0;
