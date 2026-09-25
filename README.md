@@ -1,7 +1,7 @@
 # qui
 
 `qui`는 터미널 명령어 단축키 매니저입니다.  
-자주 쓰는 명령어를 `qui 0`부터 `qui 9`까지 등록하고 빠르게 실행할 수 있습니다.
+자주 쓰는 명령어를 `qui 1`부터 `qui 9`까지 등록하고 빠르게 실행할 수 있습니다.
 
 ---
 
@@ -20,7 +20,8 @@ curl -fsSL https://raw.githubusercontent.com/yeoni2026/qui/main/uninstall.sh | b
 ---
 
 ### 단축키 등록
-`qui <num> <cmd>`
+
+- **지정 번호 등록**: `qui <num> <cmd>`
 
 예시:
 ```bash
@@ -32,6 +33,15 @@ qui 3 git add .
 
 # 직전에 썼던 명령어를 qui 4에 등록하고 싶다면
 qui 4 !!
+```
+
+- **자동 번호 등록**: `qui auto <cmd>`
+
+예시:
+```bash
+# 현재 비어있는 가장 빠른 단축 번호에 명령어를 자동 등록합니다.
+qui auto cd ~/projects/qui
+>> Command assigned to slot 2. Run with 'qui 2'.
 ```
 
 ---
@@ -47,8 +57,8 @@ qui 1
 >> hello world
 
 # 등록된 명령어가 없을 경우
-qui 2
->> Shortcut 2 is not set yet.
+qui 5
+>> Shortcut 5 is not set yet.
 ```
 
 ---
@@ -64,8 +74,27 @@ qui
 >>   qui <num> <cmd>    Register shortcut
 >>
 >> [qui shortcuts]
->>   0: (empty)
 >>   1: echo "hello world"
+>>   2: cd ~/projects/qui
 >>   ...
 >>   9: (empty)
+```
+
+---
+
+### 단축키 초기화 
+`qui clean`
+
+명령어 사용시 전체 단축키가 초기화됩니다.
+
+예시:
+```bash
+qui clean
+qui
+>>   ...
+>> [qui shortcuts]
+>>   1. (empty)
+>>   2. (empty)
+>>   ...
+>>   9. (empty)
 ```
