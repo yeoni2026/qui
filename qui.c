@@ -15,17 +15,14 @@ int find_empty(void);
 void init_datafile(void);
 void init_slot(int index);
 int is_valid_num(char *ch);
+void print_usage(void);
+
 
 int main(int argc, char *argv[]){ 
-    if (argc == 1) {        
-        // 사용법 가이드 출력
-        fprintf(stderr, "Usage:\n");
-        fprintf(stderr, "  %s <num>          Execute shortcut\n", argv[0]);
-        fprintf(stderr, "  %s <num> <cmd>    Register shortcut\n", argv[0]);
-        
+    if (argc == 1) {       
         char buffer[DATA_SIZE];
 
-        fprintf(stderr, "\n[qui shortcuts]\n");
+        fprintf(stderr, "[qui shortcuts]\n");
         for (int i = 1; i <= 9; ++i) {
             load_command(buffer, i);
         
@@ -39,6 +36,10 @@ int main(int argc, char *argv[]){
         return 0;
     }
     else if (argc == 2){
+        if (strcmp(argv[1], "usage") == 0){
+            print_usage();
+            return 0;
+        }
         if (strcmp(argv[1], "clean") == 0){
             init_datafile();
             return 0;
@@ -241,4 +242,14 @@ int is_valid_num(char *ch){
         return 1;
     }
     return 0;
+}
+
+void print_usage(void) {
+    fprintf(stderr, "Usage:\n");
+    fprintf(stderr, "  qui                             Show shortcuts status\n");
+    fprintf(stderr, "  qui <num>                       Execute shortcut\n");
+    fprintf(stderr, "  qui <num> <cmd>                 Register shortcut\n");
+    fprintf(stderr, "  qui auto <cmd>                  Auto-register shortcut\n");
+    fprintf(stderr, "  qui clean                       Clear all shortcuts\n");
+    fprintf(stderr, "  qui clean <num> <num> ...       Clear specified shortcuts\n");
 }
