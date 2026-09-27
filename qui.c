@@ -7,14 +7,14 @@
 #define DATA_SIZE 128
 #define MAX_TOKEN 10
 #define SHORTCUT_NUM 9 // 1부터 9까지
-typedef enum {SUCCESS, FILE_NOT_FOUND, FILE_READ_FAILED} res_code;
 
 void get_data_path(char *dest, size_t size);
 void load_command(char *buffer, int index);
 void change_command(char *buffer, int index);
 int find_empty(void);
-void init_datafile(char *path);
-
+void init_datafile(void);
+void init_slot(int index);
+int is_valid_num(char *ch);
 
 int main(int argc, char *argv[]){ 
     if (argc == 1) {        
@@ -40,12 +40,10 @@ int main(int argc, char *argv[]){
     }
     else if (argc == 2){
         if (strcmp(argv[1], "clean") == 0){
-            char path[PATH_MAX];
-            get_data_path(path, sizeof(path));
-            init_datafile(path);
+            init_datafile();
             return 0;
         }
-        else if (strlen(argv[1]) != 1 || !(argv[1][0] >= '1' && argv[1][0] <= '9')){
+        if (!is_valid_num(argv[1])){
             fprintf(stderr, "Error: Invalid index '%s'. Must be a number between 1 and 9.\n", argv[1]);
             exit(EXIT_FAILURE);
         }
@@ -66,6 +64,18 @@ int main(int argc, char *argv[]){
     }
     else {
         int index;
+        if (strcmp(argv[1], "clean") == 0){
+            for (int i = 2; i < argc; ++i){
+                if (!is_valid_num(argv[i])){
+                    fprintf(stderr, "Error: Invalid index '%s'. Must be a number between 1 and 9.\n", argv[i]);
+                    exit(EXIT_FAILURE);
+                }
+                index = (int)strtol(argv[i], NULL, 10);
+                init_slot(index);
+            }
+            return 0;
+        }
+        
         if (strcmp(argv[1], "auto") == 0){
             if ((index = find_empty()) == -1){
                 fprintf(stderr, "Error: All slots (1-9) are full. Use 'qui clean' to free up space.\n");
@@ -73,7 +83,7 @@ int main(int argc, char *argv[]){
             }
             fprintf(stderr, "Command assigned to slot %d. Run with 'qui %d'.\n", index, index);
         }
-        else if (strlen(argv[1]) != 1 || !(argv[1][0] >= '1' && argv[1][0] <= '9')){
+        else if (!is_valid_num(argv[1])){
             fprintf(stderr, "Error: Invalid index '%s'. Must be a number between 1 and 9.\n", argv[1]);
             exit(EXIT_FAILURE);
         }
@@ -131,7 +141,7 @@ void load_command(char *buffer, int index) {
 
     FILE *fp = fopen(path, "rb");
     if (fp == NULL) {
-        init_datafile(path);
+        init_datafile();
         fp = fopen(path, "rb");
     }
 
@@ -155,7 +165,7 @@ void change_command(char *buffer, int index){
     get_data_path(path, sizeof(path));
     
     FILE* fp = fopen(path, "rb+");
-    if (fp == NULL) init_datafile(path);
+    if (fp == NULL) init_datafile();
 
     fseek(fp, DATA_SIZE * (index - 1), SEEK_SET);
     fwrite(buffer, sizeof(char), DATA_SIZE, fp);
@@ -170,7 +180,7 @@ int find_empty(void) {
 
     FILE *fp = fopen(path, "rb");
     if (fp == NULL) {
-        init_datafile(path);
+        init_datafile();
         fp = fopen(path, "rb");
     }
 
@@ -193,7 +203,10 @@ int find_empty(void) {
     return -1; // 모든 슬롯(1~SHORTCUT_NUM)이 꽉 찼을 때
 }
 
-void init_datafile(char *path){
+void init_datafile(void){
+    char path[PATH_MAX];
+    get_data_path(path, sizeof(path));
+
     FILE *fp = fopen(path, "wb+");
     if (fp == NULL) {
         fprintf(stderr, "Error: Failed to create data file\n");
@@ -204,4 +217,28 @@ void init_datafile(char *path){
     fwrite(empty, sizeof(char), DATA_SIZE * SHORTCUT_NUM, fp);
 
     fclose(fp);
+}
+
+void init_slot(int index){
+    char path[PATH_MAX];
+    get_data_path(path, sizeof(path));
+
+    FILE *fp = fopen(path, "rb+");
+    if (fp == NULL) {
+        init_datafile();
+        return;
+    }
+    
+    char empty[DATA_SIZE] = {0};
+    fseek(fp, DATA_SIZE * (index - 1), SEEK_SET);
+    fwrite(empty, sizeof(char), DATA_SIZE, fp);
+
+    fclose(fp);
+}
+
+int is_valid_num(char *ch){
+    if (strlen(ch) == 1 && ch[0] >= '1' && ch[0] <= '9'){
+        return 1;
+    }
+    return 0;
 }

@@ -82,19 +82,17 @@ qui
 
 ---
 
-### 단축키 초기화 
-`qui clean`
+### 단축키 초기화
 
-명령어 사용시 전체 단축키가 초기화됩니다.
+- **전체 번호 초기화**: `qui clean`
+
+- **지정 번호 초기화**: `qui clean <num> <num> ...`
 
 예시:
 ```bash
+# 전체 단축키 초기화
 qui clean
-qui
->>   ...
->> [qui shortcuts]
->>   1. (empty)
->>   2. (empty)
->>   ...
->>   9. (empty)
+
+# qui 2, qui 4, qui 5 단축키만 초기화
+qui clean 2 4 5
 ```
